@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import "./diabetes.css";
 import axios from "axios";
+import { margin } from "@mui/system";
 export default function HeartDiseasePrediction() {
+  const [status, setStatus] = useState(null);
+  const [drugs, setDrugs] = useState(null);
   const [isDisease, setIsDisease] = useState("");
   const [formData, setFormData] = useState({
     field1: "",
@@ -30,7 +33,10 @@ export default function HeartDiseasePrediction() {
         data: arrOfNumbers,
       })
       .then((res) => {
-        setIsDisease(res.data);
+        // setIsDisease(res.data);
+        console.log(res.data);
+        setStatus(res.data?.status);
+        setDrugs(res.data?.drugs);
       })
       .catch((err) => {
         console.log(err);
@@ -182,7 +188,20 @@ export default function HeartDiseasePrediction() {
       <button className="submitButton" onClick={sendDataTobackend}>
         Predict Heart Result
       </button>
-      <div className="greenstrip">{isDisease}</div>
+      <div className="greenstrip">
+        {status === true && <div>Person have heart disease.</div>}
+        {status === false && <div>Person is fine.</div>}
+        {drugs && status == true && (
+          <div>
+            <div style={{ marginTop: 10 }}>Recommended Medicines : -</div>
+            <ul>
+              {drugs?.map((drug) => {
+                return <li>{drug}</li>;
+              })}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

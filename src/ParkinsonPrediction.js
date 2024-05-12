@@ -3,6 +3,8 @@ import "./diabetes.css";
 import axios from "axios";
 export default function DiabetesPrediction() {
   const [isDisease, setIsDisease] = useState("");
+  const [status, setStatus] = useState(null);
+  const [drugs, setDrugs] = useState(null);
   const [formData, setFormData] = useState({
     field1: "",
     field2: "",
@@ -31,7 +33,10 @@ export default function DiabetesPrediction() {
         data: formData,
       })
       .then((res) => {
-        setIsDisease(res.data);
+        // setIsDisease(res.data);
+        console.log(res.data);
+        setStatus(res.data?.status);
+        setDrugs(res.data?.drugs);
       })
       .catch((err) => {
         console.log(err);
@@ -256,7 +261,20 @@ export default function DiabetesPrediction() {
       <button className="submitButton" onClick={sendDataTobackend}>
         Predict Parkinson Result
       </button>
-      <div className="greenstrip"></div>
+      <div className="greenstrip">
+        {status === true && <div>Person have heart disease.</div>}
+        {status === false && <div>Person is fine.</div>}
+        {drugs && status == true && (
+          <div>
+            <div style={{ marginTop: 10 }}>Recommended Medicines : -</div>
+            <ul>
+              {drugs?.map((drug) => {
+                return <li>{drug}</li>;
+              })}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
