@@ -5,6 +5,8 @@ export default function DiabetesPrediction() {
   const [isDisease, setIsDisease] = useState("");
   const [status, setStatus] = useState(null);
   const [drugs, setDrugs] = useState(null);
+  const [medineRequired, setMedicineRequired] = useState("");
+  const [medicine, setMedicine] = useState("");
   const [formData, setFormData] = useState({
     field1: "",
     field2: "",
@@ -26,17 +28,25 @@ export default function DiabetesPrediction() {
     field18: "",
   });
   const sendDataTobackend = () => {
-    const url = "http://localhost:4000";
-    console.log("data to sent", formData);
+    const url = "http://localhost:8000/parkinsons";
+    const arr = Object.values(formData);
+    const arrOfNumbers = arr.map((element) => {
+      const numberValue = parseFloat(element);
+      return isNaN(numberValue) ? 0 : numberValue;
+    });
+    let dataToSend = { arr: arrOfNumbers, textArea: medineRequired };
+    console.log("data to sent", dataToSend);
     axios
       .post(url, {
-        data: formData,
+        data: dataToSend,
       })
       .then((res) => {
         // setIsDisease(res.data);
         console.log(res.data);
+
         setStatus(res.data?.status);
         setDrugs(res.data?.drugs);
+        setMedicine(res.data?.medicine);
       })
       .catch((err) => {
         console.log(err);
@@ -258,17 +268,27 @@ export default function DiabetesPrediction() {
           />
         </div>
       </form>
+      <div style={{ width: "95%", paddingTop: "5px" }}>
+        <textarea
+          placeholder="Enter the type of medine you want to have"
+          style={{ width: "100%" }}
+          value={medineRequired}
+          onChange={(event) => setMedicineRequired(event.target.value)}
+        >
+          {" "}
+        </textarea>
+      </div>
       <button className="submitButton" onClick={sendDataTobackend}>
         Predict Parkinson Result
       </button>
       <div className="greenstrip">
-        {status === true && <div>Person have heart disease.</div>}
+        {status === true && <div>Person have parkinson's disease.</div>}
         {status === false && <div>Person is fine.</div>}
-        {drugs && status == true && (
+        {medicine && status == true && (
           <div>
             <div style={{ marginTop: 10 }}>Recommended Medicines : -</div>
             <ul>
-              {drugs?.map((drug) => {
+              {medicine?.map((drug) => {
                 return <li>{drug}</li>;
               })}
             </ul>
